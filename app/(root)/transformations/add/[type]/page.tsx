@@ -2,7 +2,7 @@ import Header from '@/components/shared/Header'
 
 const AddTransformationTypePage = () => {
   return (
-    <Header />
+    <Header title="Transformation Title" subtitle="Transformation SubTitle" />
   )
 }
 
