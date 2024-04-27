@@ -25,9 +25,14 @@ import {
 } from "@/components/ui/form";
 
 import { Input } from "@/components/ui/input";
-import { defaultValues, transformationTypes } from "@/constants";
+import {
+  aspectRatioOptions,
+  defaultValues,
+  transformationTypes,
+} from "@/constants";
 import { CustomField } from "./CustomField";
 import { useState } from "react";
+import { AspectRatioKey } from "@/lib/utils";
 
 export const formSchema = z.object({
   title: z.string(),
@@ -46,8 +51,9 @@ const TransformationForm = ({
 }: TransformationFormProps) => {
   const transformationType = transformationTypes[type];
 
-  const [image, setImage] = useState(data)
-  const [newTransformation, setNewTransformation] = useState<Transformations | null>(null)
+  const [image, setImage] = useState(data);
+  const [newTransformation, setNewTransformation] =
+    useState<Transformations | null>(null);
 
   const initialValues =
     data && action === "Update"
@@ -71,6 +77,11 @@ const TransformationForm = ({
     console.log(values);
   }
 
+  const onSelectFieldHandler = (
+    value: string,
+    onChangeField: (value: string) => void
+  ) => {};
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -84,15 +95,25 @@ const TransformationForm = ({
 
         {type === "fill" && (
           <CustomField
+            control={form.control}
+            name="aspectRatio"
+            formLabel="Aspect Ratio"
+            className="w-full"
             render={({ field }) => (
-              <Select>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Theme" />
+              <Select
+                onValueChange={(value: any) =>
+                  onSelectFieldHandler(value, field.onChange)
+                }
+              >
+                <SelectTrigger className="select-field">
+                  <SelectValue placeholder="Select size" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="light">Light</SelectItem>
-                  <SelectItem value="dark">Dark</SelectItem>
-                  <SelectItem value="system">System</SelectItem>
+                  {Object.keys(aspectRatioOptions).map((key) => (
+                    <SelectItem key={key} value={key} className="select-item">
+                      {aspectRatioOptions[key as AspectRatioKey].label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             )}
