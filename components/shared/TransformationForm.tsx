@@ -84,14 +84,22 @@ const TransformationForm = ({
   const onSelectFieldHandler = (
     value: string,
     onChangeField: (value: string) => void
-  ) => {};
+  ) => {
+
+  };
 
   const onInputChangeHandler = (
     fieldName: string,
     value: string,
     type: string,
     onChangeField: (value: string) => void
-  ) => {};
+  ) => {
+
+  };
+
+  const onTransformHandler = () => {
+    
+  };
 
   return (
     <Form {...form}>
@@ -178,13 +186,25 @@ const TransformationForm = ({
             )}
           </div>
         )}
-        <Button
-          type="submit"
-          className="submit-button capitalize"
-          disabled={isSubmitting}
-        >
-          Submit
-        </Button>
+
+        <div className="flex flex-col gap-4">
+          <Button
+            type="button"
+            className="submit-button capitalize"
+            disabled={isTransforming || newTransformation === null}
+            onClick={onTransformHandler}
+          >
+            {isTransforming ? "Transforming..." : "Apply transformation"}
+          </Button>
+
+          <Button
+            type="submit"
+            className="submit-button capitalize"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Submitting..." : "Save Image"}
+          </Button>
+        </div>
       </form>
     </Form>
   );
