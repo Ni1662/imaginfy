@@ -31,8 +31,9 @@ import {
   transformationTypes,
 } from "@/constants";
 import { CustomField } from "./CustomField";
-import { useState } from "react";
-import { AspectRatioKey } from "@/lib/utils";
+import { useState, useTransition } from "react";
+import { AspectRatioKey, debounce, deepMergeObjects } from "@/lib/utils";
+import { updateCredits } from "@/lib/actions/user.actions";
 
 export const formSchema = z.object({
   title: z.string(),
@@ -58,6 +59,8 @@ const TransformationForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTransforming, setIsTransforming] = useState(false);
   const [transformationConfig, setTransformationConfig] = useState(config);
+
+  const [isPending, startTransition] = useTransition();
 
   const initialValues =
     data && action === "Update"
@@ -85,7 +88,18 @@ const TransformationForm = ({
     value: string,
     onChangeField: (value: string) => void
   ) => {
+    const imageSize = aspectRatioOptions[value as AspectRatioKey];
 
+    setImage((prevState: any) => ({
+      ...prevState,
+      aspectRatio: imageSize.aspectRatio,
+      width: imageSize.width,
+      height: imageSize.height,
+    }));
+
+    setNewTransformation(transformationType.config);
+
+    return onChangeField(value);
   };
 
   const onInputChangeHandler = (
@@ -94,11 +108,30 @@ const TransformationForm = ({
     type: string,
     onChangeField: (value: string) => void
   ) => {
+    debounce(() => {
+      setNewTransformation((prevState: any) => ({
+        ...prevState,
+        [type]: {
+          ...prevState?.[type],
+          [fieldName === "prompt" ? "prompt" : "to"]: value,
+        },
+      }));
 
+      return onChangeField(value);
+    }, 1000);
   };
 
-  const onTransformHandler = () => {
-    
+  const onTransformHandler = async () => {
+    setIsTransforming(true);
+
+    setTransformationConfig(
+      deepMergeObjects(newTransformation, transformationConfig)
+    );
+
+    setNewTransformation(null);
+    startTransition(async () => {
+      // await updateCredits(userId, creditFee)
+    });
   };
 
   return (
