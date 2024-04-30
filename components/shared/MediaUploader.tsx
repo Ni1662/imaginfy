@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+
 import { useToast } from "@/components/ui/use-toast";
 import { CldImage, CldUploadWidget } from "next-cloudinary";
 import Image from "next/image";
